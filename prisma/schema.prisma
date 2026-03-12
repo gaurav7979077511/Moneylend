@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+enum LoanStatus {
+  ACTIVE
+  COMPLETED
+  OVERDUE
+}
+
+model Lender {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String
+  address   String?
+  notes     String?
+  createdAt DateTime @default(now())
+  loans     Loan[]
+
+  @@index([name])
+}
+
+model Loan {
+  id            String        @id @default(cuid())
+  lenderId      String
+  amount        Decimal       @db.Decimal(14, 2)
+  roi           Decimal       @db.Decimal(5, 2)
+  startDate     DateTime
+  periodMonths  Int
+  totalExpected Decimal       @db.Decimal(14, 2)
+  status        LoanStatus    @default(ACTIVE)
+  createdAt     DateTime      @default(now())
+  lender        Lender        @relation(fields: [lenderId], references: [id], onDelete: Cascade)
+  installments  Installment[]
+
+  @@index([lenderId])
+  @@index([status])
+}
+
+model Installment {
+  id           String   @id @default(cuid())
+  loanId        String
+  amount        Decimal  @db.Decimal(14, 2)
+  receivedDate  DateTime
+  notes         String?
+  createdAt     DateTime @default(now())
+  loan          Loan     @relation(fields: [loanId], references: [id], onDelete: Cascade)
+
+  @@index([loanId])
+}
