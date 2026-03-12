@@ -1,12 +1,13 @@
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import type { ButtonHTMLAttributes, PropsWithChildren } from "react";
+import type { HTMLMotionProps } from "framer-motion";
+import type { PropsWithChildren } from "react";
 
 export function AnimatedButton({
   className,
   children,
   ...props
-}: PropsWithChildren<ButtonHTMLAttributes<HTMLButtonElement>>) {
+}: PropsWithChildren<HTMLMotionProps<"button">>) {
   return (
     <motion.button
       whileTap={{ scale: 0.97 }}
